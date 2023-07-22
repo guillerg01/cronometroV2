@@ -5,9 +5,6 @@ import { useState } from "react";
 import ContextProvider, { GlobalContext } from "@/context/GlobalContext";
 import SentenceChanger from "@/components/SentenceChanger";
 import axios from "axios";
-import '../firebase/config'
-import '../components/index'
-
 
 export default function Home() {
   const [mal, setMal] = useState(false); //para cuando hay errores de pasarse de letras de la frase
