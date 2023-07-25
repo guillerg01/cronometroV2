@@ -1,5 +1,12 @@
+'use client'
 import ContextProdvider from "@/context/GlobalContext";
+
 import "./globals.css";
+
+import { Flowbite } from 'flowbite-react';
+
+
+
 
 export const metadata = {
   title: "Cronometro",
@@ -9,9 +16,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <Flowbite >
       <ContextProdvider>
         <body>{children}</body>
       </ContextProdvider>
+      </Flowbite>
     </html>
   );
 }

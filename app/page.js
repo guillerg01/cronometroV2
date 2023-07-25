@@ -2,11 +2,11 @@
 import React, { useContext, useEffect } from "react";
 import "./velocidad.css";
 import { useState } from "react";
-import ContextProvider, { GlobalContext } from "@/context/GlobalContext";
+import  { GlobalContext } from "@/context/GlobalContext";
 import SentenceChanger from "@/components/SentenceChanger";
 import axios from "axios";
-import '../firebase/config'
-import '../components/index'
+import { Login } from "@/components/LoginChanger";
+import { useCookies } from 'react-cookie';
 
 
 export default function Home() {
@@ -20,11 +20,11 @@ export default function Home() {
   const [guardado, setGuardado] = useState(true); //avisar q ya hay partidas anteriores
   const [cantidad, setCantidad] = useState(0); //cantidad de teclas pra verificaciones
   const [win, setWin] = useState(false); // Hook para la comprobacion de ganar y evitar bugs :DYW
-  const[attemps, setAttemps] = useState(0)
-const[cargado,setCargado] = useState(false)
+  const[attemps, setAttemps] = useState(0) //intentos
+const[cargado,setCargado] = useState(false) //si ya hay tiempos anterirors
   const[info,setInfo] = useState([])
-
-
+  const[nombre,setNombre] = useState("")  //nombdre del logeado
+  const [cookies, setCookie] = useCookies(['token']); //token guardado en cookies
 
 
   const { frase, setCurPanel } = useContext(GlobalContext); // Contexto global donde se almacenara la informacion que debe ser compartida entre componentes :DYW
@@ -124,22 +124,27 @@ const[cargado,setCargado] = useState(false)
 
   const percentage = ((valor.length / frase.length) * 100).toFixed(2);
 
-//  useEffect(()=>{
-//   const contentful = require('contentful')
-
-//   const client = contentful.createClient({
-//     space: 'uwt2bbnq836e',
-//     environment: 'master', // defaults to 'master' if not set
-//     accessToken: 'NnE_375LeDPzKy7xQOh4qBL-y31zSp47HfqjoX48JVQ'
-//   })
   
-//   client.getEntry('62BcG17GGVH36MzPlWmeb3')
-//     .then((entry) => {setInfo(entry.fields);  setCargado(true);console.log(info)})
-//     .catch(console.error)
+  
+  
+  if(cookies.token!==null || cookies.token!==""){
+ useEffect(()=> {
+const res2 = axios.get(`http://localhost:4000/api/events`, {
+  headers: {
+    "Content-Type": "application/json",
+    "x-token" : `${cookies.token}`
+}
+  }).then((response) => {setHora(response.data.eventos[0].tiempos);console.log(hora);})
+
+
+    // .then((entry) => {setInfo(entry.fields);  setCargado(true);console.log(info)})
+    .catch(console.error)
 
 
 
-//  },[cargado])
+ },[])}
+
+
 
 
 //  useEffect(()=>{
@@ -290,6 +295,8 @@ const[cargado,setCargado] = useState(false)
               >
                 Frase
               </button>
+             
+        <Login   ></Login>
             </div>
           </div>
           

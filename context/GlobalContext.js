@@ -10,8 +10,10 @@ const defaultFrase =
 export default function ContextProdvider({ children }) {
   const [frase, setFrase] = useState(defaultFrase);
   const [curPanel, setCurPanel] = useState('none');
+  
+
 
   return (
-    <GlobalContext.Provider value={{ frase, setFrase, curPanel, setCurPanel }}>{children}</GlobalContext.Provider>
+    <GlobalContext.Provider value={{ frase, setFrase,  curPanel, setCurPanel }}>{children}</GlobalContext.Provider>
   );
 }
