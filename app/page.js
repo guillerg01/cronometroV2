@@ -7,6 +7,8 @@ import SentenceChanger from "@/components/SentenceChanger";
 import axios from "axios";
 import { Login } from "@/components/LoginChanger";
 import { useCookies } from 'react-cookie';
+import jwt_decode from 'jwt-decode';
+
 
 
 export default function Home() {
@@ -23,9 +25,9 @@ export default function Home() {
   const[attemps, setAttemps] = useState(0) //intentos
 const[cargado,setCargado] = useState(false) //si ya hay tiempos anterirors
   const[info,setInfo] = useState([])
-  const[nombre,setNombre] = useState("")  //nombdre del logeado
+  const[id,setID] = useState("")  //nombdre del logeado
   const [cookies, setCookie] = useCookies(['token']); //token guardado en cookies
-
+const[iduser,setIduser] = useState("")
 
   const { frase, setCurPanel } = useContext(GlobalContext); // Contexto global donde se almacenara la informacion que debe ser compartida entre componentes :DYW
 
@@ -51,7 +53,10 @@ const[cargado,setCargado] = useState(false) //si ya hay tiempos anterirors
         setHora([
           time,
           ...hora,
-        ]);
+        ])
+        mandarHora();
+        
+        ;
         
       }
     }
@@ -124,58 +129,49 @@ const[cargado,setCargado] = useState(false) //si ya hay tiempos anterirors
 
   const percentage = ((valor.length / frase.length) * 100).toFixed(2);
 
+  if(cookies.token!==null && cookies.token!==""&&cookies.token !== undefined  ){
   
-  
-  
-  if(cookies.token!==null || cookies.token!==""){
- useEffect(()=> {
-const res2 = axios.get(`http://localhost:4000/api/events`, {
+useEffect(()=>{
+
+    const tokenaenviar = cookies.token;
+    const {uid} = jwt_decode(tokenaenviar);
+ const res2 = axios.get(`http://localhost:4000/api/events/${uid}`, {
   headers: {
     "Content-Type": "application/json",
     "x-token" : `${cookies.token}`
 }
-  }).then((response) => {setHora(response.data.eventos[0].tiempos);console.log(hora);})
+  }).then((response) => {
+    setHora(response.data.eventos[0].tiempos);
+    setID(response.data.eventos[0].id);
+    setIduser(response.data.eventos[0].user._id);
+console.log(response);
+  })
 
 
-    // .then((entry) => {setInfo(entry.fields);  setCargado(true);console.log(info)})
+
     .catch(console.error)
 
+  
+},[cookies.token])
+  }
 
 
- },[])}
 
+function mandarHora(){
+  const URL =`http://localhost:4000/api/events/${id}`
+const resp= axios.put(URL,{
 
+tiempos:[time,
+...hora]
 
+},{
+  headers: {
+    "Content-Type": "application/json",
+    "x-token" : `${cookies.token}`
+  }
+  }).then((response)=>{console.log(response)})
+}
 
-//  useEffect(()=>{
-//   const URL ='https://api.contentful.com/spaces/uwt2bbnq836e(/environments/master)/entries'
-// const resp= axios.post('',{
-
-//   "sys": {
-//     "type": "Entry"
-//   },
-//   "fields": {
-//     "Nombre": {
-//       "en-US": {
-//         "sys": {
-//           "type": "ResourceLink",
-//           "linkType": "Contentful:Entry",
-//           "urn": "{crn}"
-//         }
-//       }
-//     }
-    
-//   }
-
-
-// },{
-//   headers: {
-//     "Content-Type": "application/vnd.contentful.management.v1+json",
-//     "Authorization" : `Bearer CFPAT-GmBe1CF3FAB2oRjyZZ4OdNfh2DBRyvGfwN_8CN19Flc`
-//   }
-//   }).then((response)=>{console.log(response)})
-
-//  },[])
 
   return (
     <main className="flex min-h-screen flex-col items-center  justify-center  bg-zinc-800">

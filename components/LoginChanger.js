@@ -74,7 +74,7 @@ const handleClickregister = ()=>{
 
   return (
     <>
-      <Button onClick={() => setOpenModal('form-elements')}>{cookies.token? "Cerrar Session" : "Iniciar Session"}</Button>
+      <Button onClick={() => {setOpenModal('form-elements')}}>Session</Button>
       
       <Modal show={openModal === 'form-elements'} size="md"  popup onClose={() => setOpenModal(undefined)}>
         
@@ -86,13 +86,13 @@ const handleClickregister = ()=>{
               <div className="mb-2 block">
                 <Label  value="Tu Usuario" />
               </div>
-              <input type="user" name="user" id="user" value={user} onChange={(e) => setUser(e.target.value)} className="w-full px-3 py-2 border rounded-md  border-gray-600 bg-transparent text-gray-100" />
+              <input   value={user} onChange={(e) => setUser(e.target.value)} className="w-full px-3 py-2 h-10 border rounded-md  border-gray-600 bg-transparent text-gray-100" />
             </div>
             <div>
               <div className="mb-4 block">
-                <Label htmlFor="password" value="Tu Contraseña" />
+                <Label  value="Tu Contraseña" />
               </div>
-              <input type="password" name="password" id="password"  value={password} onChange={(e) => SetPassword(e.target.value)} className="w-full px-3  border rounded-md  border-gray-600 bg-transparent text-gray-100" />
+              <input    value={password} onChange={(e) => SetPassword(e.target.value)} className=" w-full px-3 h-10 border rounded-md  border-gray-600 bg-transparent text-gray-100" />
             </div>
             <div className="flex  items-center justify-center ">
             
