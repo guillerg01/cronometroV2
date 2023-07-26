@@ -28,6 +28,9 @@ const[cargado,setCargado] = useState(false) //si ya hay tiempos anterirors
   const[id,setID] = useState("")  //nombdre del logeado
   const [cookies, setCookie] = useCookies(['token']); //token guardado en cookies
 const[iduser,setIduser] = useState("")
+const [tiemposglobales,setTiemposGlobales] = useState([])
+const [todocargado,setTodoCargado] = useState(false)
+
 
   const { frase, setCurPanel } = useContext(GlobalContext); // Contexto global donde se almacenara la informacion que debe ser compartida entre componentes :DYW
 
@@ -145,6 +148,66 @@ useEffect(()=>{
     setID(response.data.eventos[0].id);
     setIduser(response.data.eventos[0].user._id);
 console.log(response);
+console.log(sort(hora)[0]);
+                    //llamada a /tiempos
+                                      
+                  const res3 = axios.get(`http://localhost:4000/api/tiempos/${uid}`, {
+                    headers: {
+                      "Content-Type": "application/json",
+                      "x-token" : `${cookies.token}`
+                    }
+                  }).then((response) => {setTiemposGlobales(response.data);console.log(tiemposglobales);
+                  //CREAR UN TIMEPO GLOBAL DEL USER 
+                  if(tiemposglobales.busqueda&&tiemposglobales.busqueda.length===0){
+                    console.log("crear usuario global y darle valor");
+                   
+                      const URL =`http://localhost:4000/api/tiempos`
+                   if(sort(hora)[0]) {const resp= axios.post(URL,{
+                    
+                    tiempos: sort(hora)[0]
+                    
+                    },{
+                      headers: {
+                        "Content-Type": "application/json",
+                        "x-token" : `${cookies.token}`
+                      }
+                      }).then((response)=>{console.log(response)})}
+                    
+                  
+                  
+                  
+                  }
+                  
+                    if(tiemposglobales.busqueda&&tiemposglobales.busqueda[0].tiempos===sort(hora)[0]){console.log("Los tiempos son iguales");}
+                  else if(tiemposglobales.busqueda&&tiemposglobales.busqueda[0].tiempos!==sort(hora)[0]){
+                    
+                    console.log("Los tiempos son diferentes");
+                  
+                    
+                      const URL =`http://localhost:4000/api/tiempos/${tiemposglobales.busqueda[0]._id}`
+                    const resp= axios.put(URL,{
+                    
+                    tiempos:sort(hora)[0]
+                    
+                    },{
+                      headers: {
+                        "Content-Type": "application/json",
+                        "x-token" : `${cookies.token}`
+                      }
+                      }).then((response)=>{console.log(response)} )
+
+
+                     
+                  
+                  
+                  
+                  }
+                  setTodoCargado(true)
+                
+                
+                }).catch(console.error())
+                   
+
   })
 
 
@@ -154,6 +217,8 @@ console.log(response);
   
 },[cookies.token])
   }
+
+
 
 
 
@@ -307,7 +372,7 @@ tiempos:[time,
               <span className="text-zinc-600 text-sm mr-2">#{i + 1}</span>
               {timeFormat(h)}
 
-              {h === hora[0] ? <span className="text-zinc-600 text-sm mx-2">(Actual)</span> : ''}
+              {i === 0 ? <span className="text-zinc-600 text-sm mx-2">(Mejor)</span> : ''}
               </li>;
             })}
           </ul>
@@ -316,7 +381,11 @@ tiempos:[time,
             <div>
               <h4 className="text-xl mb-2">Records</h4>
               <ul>
-              {cargado&&info?.nombre.map((n,i)=>{ return <li key={i}>{n} {info?.tiempo[i]}</li>})}
+              {todocargado&&sort(tiemposglobales.tiempos).reverse().map((t,i)=>{ return <li key={i}>
+                 <span className="text-zinc-600 text-sm mr-2">#{i + 1}</span> 
+                 {timeFormat(t.tiempos)}
+                 <span className="text-zinc-600 text-sm mx-2">{t.user.name}</span>
+                 </li>})}
               </ul>
 
             </div>
