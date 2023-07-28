@@ -18,7 +18,10 @@ export default function RootLayout({ children }) {
     <html suppressHydrationWarning={true} lang="en">
       <Flowbite >
       <ContextProdvider>
-        <body  >{children}</body>
+       
+        <body  >
+        
+          {children}</body>
       </ContextProdvider>
       </Flowbite>
     </html>

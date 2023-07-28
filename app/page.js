@@ -30,6 +30,8 @@ const[cargado,setCargado] = useState(false) //si ya hay tiempos anterirors
 const[iduser,setIduser] = useState("")
 const [tiemposglobales,setTiemposGlobales] = useState([])
 const [todocargado,setTodoCargado] = useState(false)
+const [eventosvacios,setEventosVacios] = useState(false)
+
 
 
   const { frase, setCurPanel } = useContext(GlobalContext); // Contexto global donde se almacenara la informacion que debe ser compartida entre componentes :DYW
@@ -132,98 +134,206 @@ const [todocargado,setTodoCargado] = useState(false)
 
   const percentage = ((valor.length / frase.length) * 100).toFixed(2);
 
+  
+  useEffect(()=>{
+   
+   
   if(cookies.token!==null && cookies.token!==""&&cookies.token !== undefined  ){
-  
-useEffect(()=>{
+   setHora([])
+          const tokenaenviar = cookies.token;
+          const {uid} = jwt_decode(tokenaenviar);
+      const res2 = axios.get(`https://cronometro.onrender.com/api/events/${uid}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "x-token" : `${cookies.token}`
+      }
+        }).then((response) => {
+          if(response.data.eventos.length===0) {setEventosVacios(true);console.log(eventosvacios);}
+          if(response.data.eventos.length!==0) {setHora(response.data.eventos[0].tiempos) }
+          if(response.data.eventos.length!==0) {setID(response.data.eventos[0].id) }
+          if(response.data.eventos.length!==0) {setIduser(response.data.eventos[0].user._id)}
+      console.log(response);
 
-    const tokenaenviar = cookies.token;
-    const {uid} = jwt_decode(tokenaenviar);
- const res2 = axios.get(`http://localhost:4000/api/events/${uid}`, {
-  headers: {
-    "Content-Type": "application/json",
-    "x-token" : `${cookies.token}`
-}
-  }).then((response) => {
-    setHora(response.data.eventos[0].tiempos);
-    setID(response.data.eventos[0].id);
-    setIduser(response.data.eventos[0].user._id);
-console.log(response);
-console.log(sort(hora)[0]);
-                    //llamada a /tiempos
-                                      
-                  const res3 = axios.get(`http://localhost:4000/api/tiempos/${uid}`, {
-                    headers: {
-                      "Content-Type": "application/json",
-                      "x-token" : `${cookies.token}`
-                    }
-                  }).then((response) => {setTiemposGlobales(response.data);console.log(tiemposglobales);
-                  //CREAR UN TIMEPO GLOBAL DEL USER 
-                  if(tiemposglobales.busqueda&&tiemposglobales.busqueda.length===0){
-                    console.log("crear usuario global y darle valor");
-                   
-                      const URL =`http://localhost:4000/api/tiempos`
-                   if(sort(hora)[0]) {const resp= axios.post(URL,{
-                    
-                    tiempos: sort(hora)[0]
-                    
-                    },{
-                      headers: {
-                        "Content-Type": "application/json",
-                        "x-token" : `${cookies.token}`
-                      }
-                      }).then((response)=>{console.log(response)})}
-                    
-                  
-                  
-                  
-                  }
-                  
-                    if(tiemposglobales.busqueda&&tiemposglobales.busqueda[0].tiempos===sort(hora)[0]){console.log("Los tiempos son iguales");}
-                  else if(tiemposglobales.busqueda&&tiemposglobales.busqueda[0].tiempos!==sort(hora)[0]){
-                    
-                    console.log("Los tiempos son diferentes");
-                  
-                    
-                      const URL =`http://localhost:4000/api/tiempos/${tiemposglobales.busqueda[0]._id}`
-                    const resp= axios.put(URL,{
-                    
-                    tiempos:sort(hora)[0]
-                    
-                    },{
-                      headers: {
-                        "Content-Type": "application/json",
-                        "x-token" : `${cookies.token}`
-                      }
-                      }).then((response)=>{console.log(response)} )
-
-
-                     
-                  
-                  
-                  
-                  }
-                  setTodoCargado(true)
-                
-                
-                }).catch(console.error())
-                   
-
-  })
+                          //llamada a /tiempos
+                                            
+                          if(response.data.eventos.length!==0) { const res3 = axios.get(`https://cronometro.onrender.com/api/tiempos/${uid}`, {
+                          headers: {
+                            "Content-Type": "application/json",
+                            "x-token" : `${cookies.token}`
+                          }
+                        }).then((response) => {setTiemposGlobales(response.data);console.log(tiemposglobales);
+                        //CREAR UN TIMEPO GLOBAL DEL USER 
+                        if(tiemposglobales.busqueda&&tiemposglobales.busqueda.length===0){
+                          console.log("crear usuario global y darle valor");
+                        
+                            const URL =`https://cronometro.onrender.com/api/tiempos`
+                        if(hora.length!==0) {const resp= axios.post(URL,{
+                          
+                          tiempos: sort(hora)[0]
+                          
+                          },{
+                            headers: {
+                              "Content-Type": "application/json",
+                              "x-token" : `${cookies.token}`
+                            }
+                            }).then((response)=>{console.log(response);setEventosVacios(false)})}
+                          
+                        
+                        
+                        
+                        }
+                        
+                          if(tiemposglobales.busqueda.length!==0&&tiemposglobales.busqueda[0].tiempos===sort(hora)[0]){console.log("Los tiempos son iguales");}
+                        else if(tiemposglobales.busqueda.length!==0&&tiemposglobales.busqueda[0].tiempos!==sort(hora)[0]){
+                          
+                          console.log("Los tiempos son diferentes");
+                        
+                          
+                            const URL =`https://cronometro.onrender.com/api/tiempos/${tiemposglobales.busqueda[0]._id}`
+                          const resp= axios.put(URL,{
+                          
+                          tiempos:sort(hora)[0]
+                          
+                          },{
+                            headers: {
+                              "Content-Type": "application/json",
+                              "x-token" : `${cookies.token}`
+                            }
+                            }).then((response)=>{console.log(response)} )
 
 
+                          
+                        
+                        
+                        
+                        }
+                        setTodoCargado(true)
+                      
+                      
+                      }).catch(console.error())
+                        
 
-    .catch(console.error)
+        }})
 
-  
-},[cookies.token])
+
+
+          .catch(console.error)
+      
+    
   }
+},[cookies.token])
 
 
 
 
 
 function mandarHora(){
-  const URL =`http://localhost:4000/api/events/${id}`
+
+
+  if(eventosvacios){
+
+
+
+    const URL =`https://cronometro.onrender.com/api/events/`
+    const resp= axios.post(URL,{
+    
+    tiempos:[time,
+    ...hora]
+    
+    },{
+      headers: {
+        "Content-Type": "application/json",
+        "x-token" : `${cookies.token}`
+      }
+      }).then((response)=>{console.log(response); 
+        const tokenaenviar = cookies.token;
+        const {uid} = jwt_decode(tokenaenviar);
+    const res2 = axios.get(`https://cronometro.onrender.com/api/events/${uid}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "x-token" : `${cookies.token}`
+    }
+      }).then((response) => {
+        if(response.data.eventos.length===0) {setEventosVacios(true);console.log(eventosvacios);}
+        if(response.data.eventos.length!==0) {setHora(response.data.eventos[0].tiempos) }
+        if(response.data.eventos.length!==0) {setID(response.data.eventos[0].id) }
+        if(response.data.eventos.length!==0) {setIduser(response.data.eventos[0].user._id)}
+    console.log(response);
+
+                        //llamada a /tiempos
+                                          
+                        if(response.data.eventos.length!==0) { const res3 = axios.get(`https://cronometro.onrender.com/api/tiempos/${uid}`, {
+                        headers: {
+                          "Content-Type": "application/json",
+                          "x-token" : `${cookies.token}`
+                        }
+                      }).then((response) => {setTiemposGlobales(response.data);console.log(tiemposglobales);
+                      //CREAR UN TIMEPO GLOBAL DEL USER 
+                      if(tiemposglobales.busqueda&&tiemposglobales.busqueda.length===0){
+                        console.log("crear usuario global y darle valor");
+                      
+                          const URL =`https://cronometro.onrender.com/api/tiempos`
+                      if(sort(hora)[0]) {const resp= axios.post(URL,{
+                        
+                        tiempos: sort(hora)[0]
+                        
+                        },{
+                          headers: {
+                            "Content-Type": "application/json",
+                            "x-token" : `${cookies.token}`
+                          }
+                            }).then((response)=>{console.log(response);setEventosVacios(false); console.log(resp.data);})}
+                        
+                      
+                      
+                      
+                      }
+                      
+                        if(tiemposglobales.busqueda.length!==0&&tiemposglobales.busqueda[0].tiempos===sort(hora)[0]){console.log("Los tiempos son iguales");}
+                      else if(tiemposglobales.busqueda.length!==0&&tiemposglobales.busqueda[0].tiempos!==sort(hora)[0]){
+                        
+                        console.log("Los tiempos son diferentes");
+                      
+                        
+                          const URL =`https://cronometro.onrender.com/api/tiempos/${tiemposglobales.busqueda[0]._id}`
+                        const resp= axios.put(URL,{
+                        
+                        tiempos:sort(hora)[0]
+                        
+                        },{
+                          headers: {
+                            "Content-Type": "application/json",
+                            "x-token" : `${cookies.token}`
+                          }
+                          }).then((response)=>{console.log(response)} )
+
+
+                        
+                      
+                      
+                      
+                      }
+                      setTodoCargado(true)
+                    
+                    
+                    }).catch(console.error())
+                      
+
+      }})
+
+
+
+        .catch(console.error)
+    })
+
+
+
+
+
+
+  }
+  else{
+  const URL =`https://cronometro.onrender.com/api/events/${id}`
 const resp= axios.put(URL,{
 
 tiempos:[time,
@@ -234,8 +344,8 @@ tiempos:[time,
     "Content-Type": "application/json",
     "x-token" : `${cookies.token}`
   }
-  }).then((response)=>{console.log(response)})
-}
+  }).then((response)=>{console.log(response) ;} )
+}}
 
 
   return (
