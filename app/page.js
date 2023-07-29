@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useContext, useEffect } from "react";
 import "./velocidad.css";
 import { useState } from "react";

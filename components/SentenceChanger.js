@@ -1,3 +1,4 @@
+'use client'
 import { GlobalContext } from "@/context/GlobalContext";
 import React, { useContext, useEffect, useState } from "react";
 
