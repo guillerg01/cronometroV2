@@ -1,4 +1,4 @@
-'use client'
+
 import ContextProdvider from "@/context/GlobalContext";
 
 import "./globals.css";
