@@ -26,6 +26,6 @@
   },
   "devDependencies": {
     "daisyui": "^3.4.0"
-  },
+  }
 
 }
