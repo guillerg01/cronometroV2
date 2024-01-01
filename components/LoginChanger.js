@@ -23,7 +23,7 @@ const handleSubmitLogin = ({}) => {
     
   cookies.token&&  setOpenModal("none")
 
-    const res = axios.post('https://cronometro.onrender.com/api/auth/', {
+    const res = axios.post(`https://cronometro.onrender.com/api/auth/`, {
       name: user,
       password: password,
     },{
@@ -44,7 +44,7 @@ const handleSubmitLogin = ({}) => {
     
   
 
-    const res = axios.post('https://cronometro.onrender.com/api/auth/new', {
+    const res = axios.post(`https://cronometro.onrender.com/api/auth/new`, {
       name: user,
       password: password,
     },{
